@@ -3101,8 +3101,8 @@
                     }
                 }
 
-                const pctTitular = jogos > 0 ? Math.round((titulares / jogos) * 100) : 0;
-                const mediaMinutos = jogos > 0 ? Math.round(minutos / jogos) : 0;
+                const pctTitular = jogos_relacionados > 0 ? Math.round((titulares / jogos_relacionados) * 100) : 0;
+                const mediaMinutos = jogos_relacionados > 0 ? Math.round(minutos / jogos_relacionados) : 0;
                 
                 const gols90 = minutos > 0 ? parseFloat(((gols / minutos) * 90).toFixed(2)) : 0.0;
                 const golsSofridos90 = minutos > 0 ? parseFloat(((gols_sofridos / minutos) * 90).toFixed(2)) : 0.0;
@@ -3690,34 +3690,27 @@
                 
                 const partidas_sorted = [...stats.partidasFiltradas];
                 partidas_sorted.forEach(part => {
-                    const tr = document.createElement('tr');
+                    let goalsHtml = part.gols > 0 ? `<span style="color:var(--accent-green);">${part.gols}</span>` : '-';
+                    if (part.gols_contra > 0) {
+                        goalsHtml += ` <span style="color:var(--accent-red); font-size:9px;">(-${part.gols_contra} GC)</span>`;
+                    }
                     
                     let cartoes_str = '-';
-                    if (part.amarelos > 0) cartoes_str = '🟨';
-                    if (part.vermelho > 0) cartoes_str = '🟥';
+                    if (part.amarelos > 0 && part.vermelho > 0) cartoes_str = `<span style="color:var(--accent-yellow);">${part.amarelos}A</span> <span style="color:var(--accent-red);">${part.vermelho}V</span>`;
+                    else if (part.amarelos > 0) cartoes_str = `<span style="color:var(--accent-yellow);">${part.amarelos}A</span>`;
+                    else if (part.vermelho > 0) cartoes_str = `<span style="color:var(--accent-red);">${part.vermelho}V</span>`;
+
+                    const statusAbrev = part.status === 'Titular' ? 'T' : 'R';
                     
-                    let goalsHtml = '';
-                    if (part.gols > 0) {
-                        let detailList = [];
-                        if (part.gols_detalhe_jogo) {
-                            if (part.gols_detalhe_jogo.normal > 0) detailList.push(`${part.gols_detalhe_jogo.normal} NR`);
-                            if (part.gols_detalhe_jogo.falta > 0) detailList.push(`${part.gols_detalhe_jogo.falta} FT`);
-                            if (part.gols_detalhe_jogo.penalti > 0) detailList.push(`${part.gols_detalhe_jogo.penalti} PN`);
-                        }
-                        const detailStr = detailList.length > 0 ? ` (${detailList.join(', ')})` : '';
-                        goalsHtml += `<span title="Gols Marcados${detailStr}">⚽ ${part.gols}</span> `;
-                    }
-                    if (part.gols_contra > 0) goalsHtml += `<span style="color:var(--accent-red); font-weight:700;" title="Gol Contra">${part.gols_contra} GC</span>`;
-                    if (!goalsHtml) goalsHtml = '-';
-                    
+                    const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td style="color: var(--text-muted); font-size:11px;">${part.campeonato}</td>
-                        <td style="font-weight: 600;">${part.jogo}</td>
+                        <td style="font-weight:700; color:var(--text-main);">${part.placar || part.jogo}</td>
                         <td style="text-align: center;">${part.data}</td>
-                        <td style="text-align: center; font-weight:700;">${part.minutos}'</td>
+                        <td style="text-align: center;">${part.minutos}'</td>
                         <td style="text-align: center; font-weight:700;">${goalsHtml}</td>
                         <td style="text-align: center;">${cartoes_str}</td>
-                        <td style="text-align: center;"><span class="position-badge" style="font-size:9px; padding:2px 6px; color:${part.status === 'Titular' ? 'var(--accent-green)' : 'var(--text-muted)'}; border-color: rgba(255,255,255,0.05);">${part.status}</span></td>
+                        <td style="text-align: center;"><span class="position-badge" style="font-size:9px; padding:2px 6px; color:${part.status === 'Titular' ? 'var(--accent-green)' : 'var(--text-muted)'}; border-color: rgba(255,255,255,0.05);">${statusAbrev}</span></td>
                     `;
                     histBody.appendChild(tr);
                 });
