@@ -5007,14 +5007,50 @@
             <h2>Verificando Acesso...</h2>
         </div>
         <!-- Login State -->
-        <div id="login-screen" style="display:none; flex-direction:column; align-items:center; background:var(--bg-card); padding:40px; border-radius:16px; border:1px solid var(--border-color); box-shadow:var(--shadow-premium); max-width:400px; text-align:center;">
-            <img src="logo.png?v=2.0" alt="Logo" style="max-width:200px; margin-bottom:20px;">
-            <h2 style="margin-bottom:10px;">Área Restrita</h2>
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:30px;">Faça login com sua conta do Google para solicitar acesso ao sistema MétricaAtleta.</p>
-            <button id="google-login-btn" style="background:#fff; color:#444; border:1px solid #ddd; padding:12px 24px; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:10px; font-size:14px; box-shadow:0 2px 4px rgba(0,0,0,0.1); transition:all 0.3s;">
+        <div id="login-screen" style="display:none; flex-direction:column; align-items:center; background:var(--bg-card); padding:32px 30px; border-radius:16px; border:1px solid var(--border-color); box-shadow:var(--shadow-premium); width:100%; max-width:420px; box-sizing:border-box; text-align:center;">
+            <img src="logo.png?v=2.0" alt="Logo" style="max-width:180px; margin-bottom:12px;">
+            <h2 style="margin:0 0 6px 0; font-size:22px;">Área Restrita</h2>
+            <p style="font-size:13px; color:var(--text-muted); margin:0 0 20px 0;">Entre com o Google ou use o login e senha padrão de visitante.</p>
+            
+            <button id="google-login-btn" style="width:100%; background:#fff; color:#444; border:1px solid #ddd; padding:11px 18px; border-radius:8px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; font-size:14px; box-shadow:0 2px 4px rgba(0,0,0,0.08); transition:all 0.2s;">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="G" style="width:18px;">
                 Entrar com Google
             </button>
+
+            <!-- Divisor -->
+            <div style="display:flex; align-items:center; width:100%; margin:18px 0; gap:10px;">
+                <div style="flex:1; height:1px; background:var(--border-color);"></div>
+                <span style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); font-weight:700;">ou login e senha</span>
+                <div style="flex:1; height:1px; background:var(--border-color);"></div>
+            </div>
+
+            <!-- Formulário Login / Senha -->
+            <form id="password-login-form" style="width:100%; display:flex; flex-direction:column; gap:12px; margin:0;" onsubmit="return false;">
+                <div style="text-align:left;">
+                    <label style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">Usuário / E-mail</label>
+                    <input type="text" id="auth-email-input" placeholder="visitante" value="visitante" autocomplete="username" style="width:100%; box-sizing:border-box; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-main); padding:10px 14px; border-radius:8px; font-size:14px; outline:none;">
+                </div>
+                <div style="text-align:left;">
+                    <label style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">Senha</label>
+                    <input type="password" id="auth-password-input" placeholder="visitante2026" value="visitante2026" autocomplete="current-password" style="width:100%; box-sizing:border-box; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-main); padding:10px 14px; border-radius:8px; font-size:14px; outline:none;">
+                </div>
+
+                <!-- Mensagem de Erro de Login (se houver) -->
+                <div id="auth-error-msg" style="display:none; color:var(--accent-red); font-size:12px; text-align:left; line-height:1.4; padding:8px 12px; background:rgba(239, 68, 68, 0.1); border-radius:6px; border:1px solid rgba(239, 68, 68, 0.25);"></div>
+
+                <div style="display:flex; flex-direction:column; gap:8px; margin-top:4px;">
+                    <button type="submit" id="password-login-btn" style="width:100%; background:var(--accent-blue, #2563eb); color:#fff; border:none; padding:11px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-size:14px;">
+                        Entrar com Senha
+                    </button>
+                    <button type="button" id="guest-quick-login-btn" style="width:100%; background:rgba(255, 255, 255, 0.05); color:var(--text-main); border:1px dashed var(--border-color); padding:9px 16px; border-radius:8px; font-weight:600; cursor:pointer; font-size:12px;">
+                        👤 Entrar direto como Visitante
+                    </button>
+                </div>
+            </form>
+
+            <div style="margin-top:14px; font-size:11px; color:var(--text-muted); line-height:1.4; background:var(--bg-input); padding:8px 12px; border-radius:6px; width:100%; box-sizing:border-box; border:1px solid var(--border-color);">
+                💡 <b>Acesso Padrão:</b> Login <code>visitante</code> | Senha <code>visitante2026</code>
+            </div>
         </div>
         <!-- Pending State -->
         <div id="pending-screen" style="display:none; flex-direction:column; align-items:center; background:var(--bg-card); padding:40px; border-radius:16px; border:1px solid var(--border-color); box-shadow:var(--shadow-premium); max-width:400px; text-align:center;">
