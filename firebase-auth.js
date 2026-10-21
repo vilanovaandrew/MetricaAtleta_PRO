@@ -5,8 +5,7 @@ import {
     GoogleAuthProvider, 
     onAuthStateChanged, 
     signOut,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword
+    signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { 
     getFirestore, 
@@ -47,10 +46,10 @@ const logoutBtn = document.getElementById("logout-btn");
 const userEmailDisplay = document.getElementById("pending-email-display");
 
 // Elementos do Login com Senha / Visitante
-const passwordLoginForm = document.getElementById("password-login-form");
+const passwordLoginBtn = document.getElementById("password-login-btn");
+const guestQuickLoginBtn = document.getElementById("guest-quick-login-btn");
 const emailInput = document.getElementById("auth-email-input");
 const passwordInput = document.getElementById("auth-password-input");
-const guestQuickLoginBtn = document.getElementById("guest-quick-login-btn");
 const authErrorMsg = document.getElementById("auth-error-msg");
 
 function showError(msg) {
@@ -101,38 +100,17 @@ async function loginWithCredentials(login, password) {
     } catch (err) {
         console.warn("Erro no signInWithEmailAndPassword:", err.code, err.message);
 
-        // Se o provedor Email/Password estiver desligado no Firebase Console
-        if (err.code === "auth/operation-not-allowed" || (err.message && err.message.includes("PASSWORD_LOGIN_DISABLED"))) {
-            if (loadingScreen) loadingScreen.style.display = "none";
-            if (loginScreen) loginScreen.style.display = "flex";
-            showError("Aviso: O login por E-mail/Senha precisa ser ativado no Firebase Console (Authentication > Sign-in method > E-mail/senha).");
-            return;
-        }
-
-        // Se for o visitante padrão e a conta ainda não existir no Firebase Auth, tenta criar automaticamente!
-        if (email === DEFAULT_GUEST_EMAIL && (err.code === "auth/user-not-found" || err.code === "auth/invalid-credential")) {
-            try {
-                showLoading("Criando credencial de visitante no Firebase...");
-                await createUserWithEmailAndPassword(auth, email, pass);
-                return;
-            } catch (createErr) {
-                console.error("Erro ao criar visitante automático:", createErr);
-                if (loadingScreen) loadingScreen.style.display = "none";
-                if (loginScreen) loginScreen.style.display = "flex";
-                showError("Senha incorreta ou erro ao autenticar visitante.");
-                return;
-            }
-        }
-
         if (loadingScreen) loadingScreen.style.display = "none";
         if (loginScreen) loginScreen.style.display = "flex";
 
-        if (err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") {
-            showError("Senha ou login inválido. Verifique os dados digitados.");
+        if (err.code === "auth/operation-not-allowed" || (err.message && err.message.includes("PASSWORD_LOGIN_DISABLED"))) {
+            showError("Aviso: O login por E-mail/Senha precisa ser ativado no Firebase Console (Authentication > Sign-in method > E-mail/senha).");
+        } else if (err.code === "auth/wrong-password" || err.code === "auth/invalid-credential" || err.code === "auth/invalid-login-credentials") {
+            showError("Usuário ou senha incorretos.");
         } else if (err.code === "auth/user-not-found") {
-            showError("Usuário não encontrado.");
+            showError("Usuário não cadastrado.");
         } else if (err.code === "auth/too-many-requests") {
-            showError("Muitas tentativas sem sucesso. Aguarde um momento.");
+            showError("Muitas tentativas. Aguarde alguns instantes.");
         } else {
             showError("Erro ao fazer login: " + err.message);
         }
@@ -152,19 +130,35 @@ if (loginBtn) {
     });
 }
 
-if (passwordLoginForm) {
-    passwordLoginForm.addEventListener("submit", (e) => {
-        e.preventDefault();
+// Clique no botão "Entrar com Senha"
+if (passwordLoginBtn) {
+    passwordLoginBtn.addEventListener("click", () => {
         const email = emailInput ? emailInput.value : "";
         const pass = passwordInput ? passwordInput.value : "";
         loginWithCredentials(email, pass);
     });
 }
 
+// Enter nos inputs de login e senha
+if (emailInput) {
+    emailInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            if (passwordInput) passwordInput.focus();
+        }
+    });
+}
+
+if (passwordInput) {
+    passwordInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            if (passwordLoginBtn) passwordLoginBtn.click();
+        }
+    });
+}
+
+// Clique no botão "Entrar como Visitante"
 if (guestQuickLoginBtn) {
     guestQuickLoginBtn.addEventListener("click", () => {
-        if (emailInput) emailInput.value = DEFAULT_GUEST_USER;
-        if (passwordInput) passwordInput.value = DEFAULT_GUEST_PASS;
         loginWithCredentials(DEFAULT_GUEST_USER, DEFAULT_GUEST_PASS);
     });
 }
